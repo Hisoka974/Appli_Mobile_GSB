@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'vues/Connexion.dart';
 
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
