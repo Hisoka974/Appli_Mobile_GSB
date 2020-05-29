@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../Bdd/bdd.dart';
 
 class Connexion extends StatefulWidget {
   @override
@@ -6,11 +7,21 @@ class Connexion extends StatefulWidget {
 }
 
 class _Connexion extends State<Connexion> {
+
+ static BaseDeDonnees bdd = BaseDeDonnees.instance;
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
 
     final _frmConnexion = GlobalKey<FormState>();
 
+    //Champs
+    final _tbmdp = TextEditingController();
+    final _tblogin = TextEditingController();
     //Logo
     final logo =Hero(
       tag: 'gsb',
@@ -23,6 +34,7 @@ class _Connexion extends State<Connexion> {
 
     //input Login
     final tblogin =TextFormField(
+      controller: _tblogin,
       validator: (value){
           if(value.isEmpty){
             return('Veuillez entrez votre login') ;
@@ -41,6 +53,7 @@ class _Connexion extends State<Connexion> {
 
     //input Mot de passe
     final tbmdp =TextFormField(
+      controller: _tbmdp,
       validator: (value){
         if(value.isEmpty){
           return('Veuillez entrez votre mot de passe') ;
@@ -69,7 +82,20 @@ class _Connexion extends State<Connexion> {
           borderRadius: BorderRadius.circular(50),
         ),
         onPressed: () {
+
             if(_frmConnexion.currentState.validate()){
+              var res = bdd.testConnexion(_tblogin.text, _tbmdp.text);
+
+              //On test si les identifiants sont corrects
+              res.then((onValue){
+                if(onValue==true)
+                  {
+                    print('existe');
+                  } else{
+                  print('existe pas');
+                }
+
+              });
               
             }
         },
@@ -80,7 +106,8 @@ class _Connexion extends State<Connexion> {
     );
 
     //Formulaire de connexion
-    return Form(
+    return
+      Form(
       key: _frmConnexion,
       child: Scaffold(
         backgroundColor: Colors.white,
