@@ -16,7 +16,6 @@ class Visiteur{
 
   //Constructeur
   Visiteur(int id, String nom, String prenom, String tel, String adr, DateTime dateNaiss, String mail, int objAnnuel){
-
     this._id = id;
     this._nom = nom;
     this._prenom = prenom;
