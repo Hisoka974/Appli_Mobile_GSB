@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../Bdd/bdd.dart';
+import '../Modèles/fonctions.dart';
+import 'menu.dart';
 
 class Connexion extends StatefulWidget {
   @override
@@ -8,7 +11,7 @@ class Connexion extends StatefulWidget {
 
 class _Connexion extends State<Connexion> {
 
- static BaseDeDonnees bdd = BaseDeDonnees.instance;
+ static BaseDeDonnees bdd = BaseDeDonnees.OuvrirConnexion;
 
 
 
@@ -16,6 +19,37 @@ class _Connexion extends State<Connexion> {
 
   @override
   Widget build(BuildContext context) {
+
+    //Fonction pour fermer l'application
+    Future<bool> _fermerAppli() {
+
+      return showDialog(context: context, builder:
+          (context) => AlertDialog(
+        title: Text('Etes vous sur ?'),
+        content: Text('Vous allez quitter l''application'),
+        actions: <Widget>[
+          FlatButton(
+            color: Colors.blue,
+            textColor: Colors.white,
+            child: Text('Oui'),
+            onPressed: (){
+              SystemNavigator.pop();
+            },
+          ),
+          FlatButton(
+            color: Colors.red,
+            textColor: Colors.white,
+            child: Text('Non'),
+            onPressed: (){
+              Navigator.of(context).pop(false);
+            },
+          )
+        ],
+      )
+
+      );
+
+    }
 
     final _frmConnexion = GlobalKey<FormState>();
 
@@ -90,9 +124,14 @@ class _Connexion extends State<Connexion> {
               res.then((onValue){
                 if(onValue==true)
                   {
-                    print('existe');
+                    //fonctions.affciherToast("OK", Colors.green);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Menu()),
+                    );
                   } else{
-                  print('existe pas');
+                    fonctions.affciherToast("Login ou mot de passe incorrect", Colors.red);
                 }
 
               });
@@ -107,33 +146,36 @@ class _Connexion extends State<Connexion> {
 
     //Formulaire de connexion
     return
-      Form(
-      key: _frmConnexion,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body:Center(
-          child: ListView(
-            shrinkWrap: true,
-            padding: EdgeInsets.only(left: 24.0, right: 24.0),
-            children: <Widget>[
-              logo,
-              SizedBox(
-                height: 48.0,
+        WillPopScope(child: Form(
+          key: _frmConnexion,
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            body:Center(
+              child: ListView(
+                shrinkWrap: true,
+                padding: EdgeInsets.only(left: 24.0, right: 24.0),
+                children: <Widget>[
+                  logo,
+                  SizedBox(
+                    height: 48.0,
+                  ),
+                  tblogin,
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  tbmdp,
+                  SizedBox(
+                    height: 48.0,
+                  ),
+                  btnValider,
+                ],
               ),
-              tblogin,
-              SizedBox(
-                height: 8.0,
-              ),
-              tbmdp,
-              SizedBox(
-                height: 48.0,
-              ),
-              btnValider,
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        ), onWillPop: (){
+          _fermerAppli();
+        });
+
   }
 }
 

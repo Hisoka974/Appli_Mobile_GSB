@@ -2,6 +2,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:io';
 import 'package:path/path.dart';
+import 'package:ppe/Modèles/Collections.dart';
 
 class BaseDeDonnees {
   //Les variables et les noms de fonction commençants par _, sont privées.
@@ -13,7 +14,7 @@ class BaseDeDonnees {
 
   //Constructeur
   BaseDeDonnees._constructor();
-  static final BaseDeDonnees instance = BaseDeDonnees._constructor();
+  static final BaseDeDonnees OuvrirConnexion = BaseDeDonnees._constructor();
 
 //Initialisation de la Base de données
   Future<Database> get database async {
@@ -92,6 +93,8 @@ class BaseDeDonnees {
     bdd.execute('''
    INSERT INTO admin VALUES (1,'admin','admin');
     ''');
+
+
   }
 
   //On test si les identifiants de connexion sont corrects.
@@ -110,4 +113,11 @@ class BaseDeDonnees {
     }
     return false;
   }
+
+  //Fermer la connexion à la base de données
+  Future fermerConnexion() async{
+    final bdd = await database;
+     return bdd.close();
+  }
+
 }
