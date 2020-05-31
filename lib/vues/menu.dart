@@ -1,19 +1,23 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:badges/badges.dart';
 
 import 'Connexion.dart';
+import '../Modèles/fonctions.dart';
+import 'ajouterVisiteur.dart';
 
 class Menu extends StatefulWidget {
   @override
   _Menu createState() => _Menu();
 }
 
-class _Menu extends State<Menu> {
+class _Menu extends State {
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final SnackBar snackBar = const SnackBar(content: Text('Showing Snackbar'));
 
-  Future<bool> _alert() {
+  Future<bool> _Deconnexion() {
    
     return showDialog(context: context, builder:
     (context) => AlertDialog(
@@ -48,36 +52,34 @@ class _Menu extends State<Menu> {
 
   @override
   Widget build(BuildContext context) {
+
+
     return WillPopScope(child: Scaffold(
         key: scaffoldKey,
         appBar: AppBar(
-          title: const Text('AppBar Demo'),
+          title: const Text('GSB Mobile - Visiteurs'),
           actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.add_alert),
-              tooltip: 'Show Snackbar',
-              onPressed: () {
-                scaffoldKey.currentState.showSnackBar(snackBar);
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.navigate_next),
-              tooltip: 'Next page',
-              onPressed: () {
 
-              },
-            ),
+
           ],
         ),
         body:
-          const Center(
-            child: Text(
-              'This is the home page',
-              style: TextStyle(fontSize: 24),
-            ),
+           Center(
+            child: Container(
+
+            )
+          ),
+          floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.person_add),
+            onPressed: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AjouterVisiteur()),
+              );
+            },
           ),
         ), onWillPop: (){
-      _alert();
+      _Deconnexion();
     },
     );
   }

@@ -72,9 +72,4 @@ int get objAnnuel => _objAnnuel;
     this._objAnnuel = obj;
   }
 
-
-
-
-
-
 }

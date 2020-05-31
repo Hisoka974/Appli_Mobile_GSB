@@ -20,8 +20,10 @@ class _Connexion extends State<Connexion> {
   @override
   Widget build(BuildContext context) {
 
+
     //Fonction pour fermer l'application
     Future<bool> _fermerAppli() {
+
 
       return showDialog(context: context, builder:
           (context) => AlertDialog(
@@ -33,6 +35,7 @@ class _Connexion extends State<Connexion> {
             textColor: Colors.white,
             child: Text('Oui'),
             onPressed: (){
+              bdd.fermerConnexion();
               SystemNavigator.pop();
             },
           ),
