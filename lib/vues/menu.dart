@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ppe/vues/modifierVisiteur.dart';
 import '../Bdd/bdd.dart';
 
 import 'package:ppe/Mod%C3%A8les/Visiteur.dart';
@@ -67,7 +68,12 @@ class _Menu extends State {
                   ],
                 ),
                 onPressed: (){
-                  print('info');
+                  Navigator.of(context).pop(false);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => new ModifierVisiteur(monVisiteur: unVisiteur, index: index),
+                  )
+                  );
                 },
               ),
 

@@ -181,6 +181,40 @@ class BaseDeDonnees {
 
   }
 
+  //Modifier visiteur
+  Future ModifierVisiteur(int id, String nom, String prenom, String tel, String adr, String Bod, String mail, int Obj, int index)async{
+    
+    final bdd = await database;
+    final monVisiteur = collection.collectionVisiteurs.elementAt(index);
+    var success = 'OK';
+    
+    try{
+      
+      await bdd.rawUpdate('''
+      
+      
+        UPDATE visiteurMedical 
+        SET nom = ?, prenom = ?, telephone = ?, adresse = ?, dateNaissance = ?, mail = ?, ObjAnnuel =?   
+        WHERE id = ?
+        ''',
+          [nom, prenom, tel, adr, Bod, mail, Obj, id]
+      );
+
+      monVisiteur.setNom(nom);
+      monVisiteur.setPrenom(prenom);
+      monVisiteur.setAdr(adr);
+      monVisiteur.setTel(tel);
+      monVisiteur.setDateNaiss(Bod);
+      monVisiteur.setMail(mail);
+      monVisiteur.setObjAnnuel(Obj);
+      
+    }catch(e){
+      success = 'Erreur: '+e;
+    }
+    
+    return success;
+  }
+
 
   //Récupérer tous les visiteurs dans la bdd
   Future getAllVisiteur() async{
