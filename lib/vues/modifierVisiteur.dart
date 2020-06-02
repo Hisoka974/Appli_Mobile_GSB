@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import '../Bdd/bdd.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 
 class ModifierVisiteur extends StatefulWidget {

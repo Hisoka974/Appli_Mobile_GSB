@@ -70,5 +70,4 @@ int get getObjAnnuel => _objAnnuel;
   }
 
 
-
 }

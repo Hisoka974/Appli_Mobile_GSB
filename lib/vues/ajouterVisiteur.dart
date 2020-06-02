@@ -38,6 +38,66 @@ class _AjouterVisiteur extends State<AjouterVisiteur> {
     var _tbDob = TextEditingController();
     var _tbObj = TextEditingController();
 
+
+    //Fonction de confirmation avant ajout
+    Future<bool> _confirmer(){
+
+      return showDialog(context: context, builder:
+          (context) => AlertDialog(
+        title: Text('Etes vous sur ?'),
+        content: Text('Voulez-vous vraiment ajouter ce visiteur'),
+        actions: <Widget>[
+          FlatButton(
+            color: Colors.blue,
+            textColor: Colors.white,
+            child: Text('Oui'),
+            onPressed: (){
+              var res = bdd.AjouterVisiteur(_tbNom.text, _tbPrenom.text,_tbTel.text, _tbAdr.text, _tbDob.text , _tbEmail.text, int.parse(_tbObj.text));
+              res.then((retour){
+                if(retour =='OK')
+                {
+                  fonctions.affciherToast('Ajout effectué', Colors.green);
+                  Navigator.of(context).pop(false);
+
+                  _tbNom.clear();
+                  _tbPrenom.clear();
+                  _tbAdr.clear();
+                  _tbDob.clear();
+                  _tbEmail.clear();
+                  _tbObj.clear();
+                  _tbTel.clear();
+
+                } else{
+                  fonctions.affciherToast('Une erreur est survenue lors de l''ajout', Colors.red);
+                }
+              });
+            },
+          ),
+          FlatButton(
+            color: Colors.red,
+            textColor: Colors.white,
+            child: Text('Non'),
+            onPressed: (){
+              Navigator.of(context).pop(false);
+            },
+          )
+        ],
+      )
+      );
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
     //Définitions des textboxs
     final tbNom =TextFormField(
       controller: _tbNom,
@@ -164,15 +224,7 @@ class _AjouterVisiteur extends State<AjouterVisiteur> {
         ),
         onPressed: () {
           if(_frmConnexion.currentState.validate()){
-           var res = bdd.AjouterVisiteur(_tbNom.text, _tbPrenom.text,_tbTel.text, _tbAdr.text, _tbDob.text , _tbEmail.text, int.parse(_tbObj.text));
-           res.then((retour){
-             if(retour =='OK')
-             {
-              fonctions.affciherToast('Ajout effectué', Colors.green);
-             } else{
-               fonctions.affciherToast('Une erreur est survenue lors de l''ajout', Colors.red);
-             }
-           });
+              _confirmer();
           }
         },
         padding: EdgeInsets.all(12),
