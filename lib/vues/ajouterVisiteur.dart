@@ -38,9 +38,6 @@ class _AjouterVisiteur extends State<AjouterVisiteur> {
     var _tbDob = TextEditingController();
     var _tbObj = TextEditingController();
 
-
-
-
     //Définitions des textboxs
     final tbNom =TextFormField(
       controller: _tbNom,
