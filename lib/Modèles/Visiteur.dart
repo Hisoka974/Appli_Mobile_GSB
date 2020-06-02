@@ -8,14 +8,14 @@ class Visiteur{
   String _prenom;
   String _tel;
   String _adr;
-  DateTime _dateNaiss;
+  String _dateNaiss;
   String _mail;
   int _objAnnuel;
 
 
 
   //Constructeur
-  Visiteur(int id, String nom, String prenom, String tel, String adr, DateTime dateNaiss, String mail, int objAnnuel){
+  Visiteur(int id, String nom, String prenom, String tel, String adr, String dateNaiss, String mail, int objAnnuel){
     this._id = id;
     this._nom = nom;
     this._prenom = prenom;
@@ -24,9 +24,6 @@ class Visiteur{
     this._dateNaiss = dateNaiss;
     this._mail = mail;
     this._objAnnuel = objAnnuel;
-
-
-
   }
 
 
@@ -36,9 +33,9 @@ String get getNom => _nom;
 String get getPrenom => _prenom;
 String get getTel => _tel;
 String get getAdr => _adr;
-DateTime get getDatNaiss => _dateNaiss;
+String get getDatNaiss => _dateNaiss;
 String get getMail => _mail;
-int get objAnnuel => _objAnnuel;
+int get getObjAnnuel => _objAnnuel;
 
 
 //Méthodes set
@@ -60,7 +57,7 @@ int get objAnnuel => _objAnnuel;
     this._adr = adr;
   }
 
-  void setDateNaiss(DateTime date){
+  void setDateNaiss(String date){
     this._dateNaiss = date;
   }
 
@@ -71,5 +68,7 @@ int get objAnnuel => _objAnnuel;
   void setObjAnnuel(int obj){
     this._objAnnuel = obj;
   }
+
+
 
 }

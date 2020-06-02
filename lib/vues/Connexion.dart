@@ -128,10 +128,10 @@ class _Connexion extends State<Connexion> {
                 if(onValue==true)
                   {
                     //fonctions.affciherToast("OK", Colors.green);
-
+                    bdd.remplirCollection();
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Menu()),
+                      MaterialPageRoute(builder: (context) => new Menu()),
                     );
                   } else{
                     fonctions.affciherToast("Login ou mot de passe incorrect", Colors.red);

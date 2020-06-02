@@ -1,8 +1,11 @@
 import 'package:path_provider/path_provider.dart';
+import 'package:ppe/Mod%C3%A8les/Visiteur.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:io';
+import 'dart:async';
 import 'package:path/path.dart';
 import 'package:ppe/Modèles/Collections.dart';
+
 
 class BaseDeDonnees {
   //Les variables et les noms de fonction commençants par _, sont privées.
@@ -63,7 +66,7 @@ class BaseDeDonnees {
     prenom TEXT NOT NULL,
     telephone TEXT NOT NULL,
     adresse TEXT NOT NULL,
-    dateNaissance DATE NOT NULL,
+    dateNaissance TEXT NOT NULL,
     mail TEXT NOT NULL,
     ObjAnnuel INTEGER NOT NULL
     );
@@ -93,8 +96,6 @@ class BaseDeDonnees {
     bdd.execute('''
    INSERT INTO admin VALUES (1,'admin','admin');
     ''');
-
-
   }
 
   //On test si les identifiants de connexion sont corrects.
@@ -112,6 +113,94 @@ class BaseDeDonnees {
       return true;
     }
     return false;
+  }
+  
+  Future<bool> suppVisiteur(int id, int index) async{
+    
+    bool success = true;
+    final bdd = await database;
+    
+    //Supprimer dans la base de données et dans la collection
+    try{
+     await bdd.delete(
+       'visiteurMedical',
+       where: "id = ?",
+       whereArgs: [id],
+     );
+     collection.collectionVisiteurs.removeAt(index);
+    }catch(e){
+      success = false;
+      print(e);
+    }
+    
+    return success;
+  }
+
+
+  //Ajouter un visiteur dans la collection et dans la bdd
+  Future AjouterVisiteur(String nom, String prenom, String tel, String adr, String Bod, String mail, int Obj ) async{
+
+    final bdd = await database;
+    var success = 'OK';
+    int lastId = 0;
+    print('process = Début');
+    //On insert le visiteur dans la base de données
+
+    try{
+      print('process = ajout bdd');
+      lastId = await bdd.rawInsert("INSERT INTO visiteurMedical(nom, prenom, telephone, adresse, dateNaissance, mail, ObjAnnuel) VALUES(?,?,?,?,?,?,?)",
+     [nom, prenom, tel, adr, Bod, mail, Obj]);
+    }catch(e){
+      print('process = ajout bdd echec');
+      success ="Erreur : "+e;
+      return success;
+    }
+
+    //On test que l'id renvoyé n'est pas égal à 0 et on créer un nouveau visiteur qu'on ajoute dans la collection
+    if(lastId != 0){
+
+      try{
+        var monVisiteur = new Visiteur(lastId, nom, prenom, tel, adr, Bod, mail, Obj);
+        collection.collectionVisiteurs.add(monVisiteur);
+        print('process = ajout collection');
+      }catch(e){
+        print('process = ajout collection echec');
+        success ="Erreur : "+e;
+        return success;
+      }
+
+    }else{
+      success = 'id = 0';
+      return success;
+    }
+
+
+    //Tous s'est bien passé
+    print('process = ajout effectué');
+    return success;
+
+  }
+
+
+  //Récupérer tous les visiteurs dans la bdd
+  Future getAllVisiteur() async{
+
+    final bdd = await database;
+    var res = await bdd.query('visiteurMedical');
+    return res;
+  }
+
+  //Remplir les collections
+  Future remplirCollection() async{
+    final bdd = await database;
+    var res = await getAllVisiteur();
+
+    //On parcourt la liste des visiteur et on remplit la collection
+    res.forEach((ligne){
+      //On créer un visiteur
+      var monVisiteur = new Visiteur(ligne["id"], ligne["nom"], ligne["prenom"], ligne["telephone"], ligne["adresse"], ligne["dateNaissance"], ligne["mail"], ligne["ObjAnnuel"]);
+      collection.collectionVisiteurs.add(monVisiteur);
+    });
   }
 
   //Fermer la connexion à la base de données
