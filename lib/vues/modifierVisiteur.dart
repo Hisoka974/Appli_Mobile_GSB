@@ -105,19 +105,6 @@ class _ModifierVisiteur extends State<ModifierVisiteur> {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     //Définitions des textboxs
     final tbNom =TextFormField(
       controller: _tbNom,
@@ -165,10 +152,12 @@ class _ModifierVisiteur extends State<ModifierVisiteur> {
 
     final tbTel =TextFormField(
       controller: _tbTel,
+      maxLength: 10,
+      maxLengthEnforced: true,
       keyboardType: TextInputType.number,
       validator: (value){
-        if(value.isEmpty || !isNumeric(value)){
-          return('Veuillez entrez un numéro de téléphone') ;
+        if(value.isEmpty || !isNumeric(value) || !isNumeric(value.replaceAll(' ', '')) || !isNumeric(value.replaceAll('-', ''))){
+          return('Veuillez entrez un numéro de téléphone valide') ;
         }
         return null;
       },
@@ -220,8 +209,9 @@ class _ModifierVisiteur extends State<ModifierVisiteur> {
 
     final tbObjAnn =TextFormField(
       controller: _tbObj,
+      keyboardType: TextInputType.number,
       validator: (value){
-        if(value.isEmpty || !isNumeric(value)){
+        if(value.isEmpty || !isNumeric(value)|| !isNumeric(value.replaceAll(' ', ''))){
           return('Veuillez entrez un objectif annuel') ;
         }
         return null;

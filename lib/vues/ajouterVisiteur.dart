@@ -145,10 +145,12 @@ class _AjouterVisiteur extends State<AjouterVisiteur> {
     );
 
     final tbTel =TextFormField(
+      maxLength: 10,
+      maxLengthEnforced: true,
       controller: _tbTel,
       keyboardType: TextInputType.number,
       validator: (value){
-        if(value.isEmpty || !isNumeric(value) || !isNumeric(value.replaceAll(' ', '')) || !isNumeric(value.replaceAll('-', ''))){
+        if(value.isEmpty || !isNumeric(value) || !isNumeric(value.replaceAll(' ', '')) || !isNumeric(value.replaceAll('-', '')) || value.length > 14){
           return('Veuillez entrez un numéro de téléphone') ;
         }
         return null;

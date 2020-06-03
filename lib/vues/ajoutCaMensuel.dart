@@ -5,6 +5,7 @@ import 'package:ppe/Mod%C3%A8les/Visiteur.dart';
 import 'package:ppe/vues/menu.dart';
 import 'package:string_validator/string_validator.dart';
 import '../Modèles/fonctions.dart';
+
 import '../Modèles/Collections.dart';
 import '../Modèles/Date.dart';
 
