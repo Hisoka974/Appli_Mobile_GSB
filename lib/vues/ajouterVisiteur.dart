@@ -148,7 +148,7 @@ class _AjouterVisiteur extends State<AjouterVisiteur> {
       controller: _tbTel,
       keyboardType: TextInputType.number,
       validator: (value){
-        if(value.isEmpty || !isNumeric(value)){
+        if(value.isEmpty || !isNumeric(value) || !isNumeric(value.replaceAll(' ', '')) || !isNumeric(value.replaceAll('-', ''))){
           return('Veuillez entrez un numéro de téléphone') ;
         }
         return null;
@@ -201,8 +201,9 @@ class _AjouterVisiteur extends State<AjouterVisiteur> {
 
     final tbObjAnn =TextFormField(
       controller: _tbObj,
+      keyboardType: TextInputType.number,
       validator: (value){
-        if(value.isEmpty || !isNumeric(value)){
+        if(value.isEmpty || !isNumeric(value)|| !isNumeric(value.replaceAll(' ', ''))){
           return('Veuillez entrez un objectif annuel') ;
         }
         return null;

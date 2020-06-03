@@ -1,5 +1,7 @@
 import 'package:path_provider/path_provider.dart';
+import 'package:ppe/Mod%C3%A8les/Date.dart';
 import 'package:ppe/Mod%C3%A8les/Visiteur.dart';
+import 'package:ppe/Mod%C3%A8les/caMensuel.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:io';
 import 'dart:async';
@@ -39,7 +41,7 @@ class BaseDeDonnees {
     bdd.execute('''
     CREATE TABLE IF NOT EXISTS mois(
     NumMois INTERGER PRIMARY KEY,
-    MOIS TEXT NOR NULL
+    mois TEXT NOR NULL
     );
     ''');
 
@@ -122,11 +124,20 @@ class BaseDeDonnees {
     
     //Supprimer dans la base de données et dans la collection
     try{
+
+      await bdd.delete(
+        'realiserCA',
+        where: "idVisiteur = ?",
+        whereArgs: [id],
+      );
+
      await bdd.delete(
        'visiteurMedical',
        where: "id = ?",
        whereArgs: [id],
      );
+
+
      collection.collectionVisiteurs.removeAt(index);
     }catch(e){
       success = false;
@@ -139,7 +150,7 @@ class BaseDeDonnees {
 
   //Ajouter un visiteur dans la collection et dans la bdd
   Future AjouterVisiteur(String nom, String prenom, String tel, String adr, String Bod, String mail, int Obj ) async{
-
+    List mesCa = <caMensuel>[];
     final bdd = await database;
     var success = 'OK';
     int lastId = 0;
@@ -160,7 +171,7 @@ class BaseDeDonnees {
     if(lastId != 0){
 
       try{
-        var monVisiteur = new Visiteur(lastId, nom, prenom, tel, adr, Bod, mail, Obj);
+        var monVisiteur = new Visiteur(lastId, nom, prenom, tel, adr, Bod, mail, Obj, mesCa);
         collection.collectionVisiteurs.add(monVisiteur);
         print('process = ajout collection');
       }catch(e){
@@ -192,13 +203,13 @@ class BaseDeDonnees {
       
       await bdd.rawUpdate('''
       
-      
         UPDATE visiteurMedical 
         SET nom = ?, prenom = ?, telephone = ?, adresse = ?, dateNaissance = ?, mail = ?, ObjAnnuel =?   
         WHERE id = ?
         ''',
           [nom, prenom, tel, adr, Bod, mail, Obj, id]
       );
+
 
       monVisiteur.setNom(nom);
       monVisiteur.setPrenom(prenom);
@@ -224,17 +235,146 @@ class BaseDeDonnees {
     return res;
   }
 
+
+  Future getCa() async{
+
+    final bdd = await database;
+    var res = await bdd.query('realiserCA');
+    return res;
+  }
+
   //Remplir les collections
   Future remplirCollection() async{
-    final bdd = await database;
-    var res = await getAllVisiteur();
+    collection.collectionVisiteurs.clear();
+    collection.collectionMois.clear();
 
-    //On parcourt la liste des visiteur et on remplit la collection
-    res.forEach((ligne){
-      //On créer un visiteur
-      var monVisiteur = new Visiteur(ligne["id"], ligne["nom"], ligne["prenom"], ligne["telephone"], ligne["adresse"], ligne["dateNaissance"], ligne["mail"], ligne["ObjAnnuel"]);
-      collection.collectionVisiteurs.add(monVisiteur);
-    });
+    // Remplir la collection de visiteurs
+    var res = await getAllVisiteur();
+try{
+  //On parcourt la liste des visiteur et on remplit la collection
+  res.forEach((ligne) async {
+    List mesCa = <caMensuel>[];
+    var CaMensuel = await getCaByVisiteur(ligne['id']);
+
+    //Si un chiffre d'affaire est retourné
+    if (CaMensuel.length > 0) {
+      CaMensuel.forEach((ca) {
+        var monCaMensuel = new caMensuel(
+            ca['idVisiteur'], ca['numMois'], ca['mois'], int.parse(ca['CAMensuel']));
+        mesCa.add(monCaMensuel);
+      });
+    }
+
+
+    //On créer un visiteur
+    var monVisiteur = new Visiteur(
+        ligne["id"],
+        ligne["nom"],
+        ligne["prenom"],
+        ligne["telephone"],
+        ligne["adresse"],
+        ligne["dateNaissance"],
+        ligne["mail"],
+        ligne["ObjAnnuel"],
+        mesCa
+    );
+    collection.collectionVisiteurs.add(monVisiteur);
+    print("Collection visiteur"+collection.collectionVisiteurs.length.toString());
+  });
+
+
+
+  //Remplir la collection de mois
+  var resMois = await getAllmois();
+  resMois.forEach((ligne){
+    var monMois = new Mois(ligne['NumMois'],ligne['mois']);
+    collection.collectionMois.add(monMois);
+  });
+}catch(e){
+  print (e);
+}
+
+
+  }
+
+  //Récupérer tous les mois de la bdd
+  Future getAllmois() async{
+    final bdd = await database;
+    var res = await bdd.query('mois');
+    return res;
+  }
+
+
+  //On récupère le CA par visiteur
+  Future getCaByVisiteur(int id) async{
+
+    var bdd = await database;
+    var res = bdd.rawQuery(
+      "Select idVisiteur, realiserCA.numMois, mois, CAMensuel  From realiserCA "
+          "INNER JOIN mois ON realiserCA.numMois = mois.NumMois "
+          "WHERE idVisiteur = ?",
+      [id]
+    );
+
+    return res;
+
+  }
+
+
+  Future ajouterCaMensuel(int idVisiteur, int idMois, String mois, int ca, int index) async{
+
+    final bdd = await database;
+    var monVisiteur = collection.collectionVisiteurs.elementAt(index);
+    var success = 'OK';
+
+
+    try{
+      await bdd.rawInsert("INSERT INTO realiserCA(idVisiteur, numMois, CAMensuel) VALUES(?,?,?)",
+          [idVisiteur, idMois, ca]);
+
+      var monCa = new caMensuel(idVisiteur, idMois, mois, ca);
+      monVisiteur.setCaMensuel(monCa);
+    }catch(e){
+      success = 'Erreur : '+e.toString();
+      print('Erreur :'+e.toString());
+    }
+
+    return success;
+
+  }
+
+  Future uptCaMensuel(int idVisiteur, int idMois, String mois, int ca, int index) async{
+
+    final bdd = await database;
+    var monVisiteur = collection.collectionVisiteurs.elementAt(index);
+    var success = 'OK';
+
+
+    try{
+
+      await bdd.rawUpdate('''
+      
+        UPDATE realiserCA 
+        SET CAMensuel = ?   
+        WHERE idVisiteur = ? AND numMois = ?
+        ''',
+          [ca, idVisiteur, idMois]
+      );
+
+      monVisiteur.getListCa.forEach((monCa){
+        if(monCa.getIdVisiteur == idVisiteur && monCa.getNumMois == idMois){
+          monCa.setCa(ca);
+        }
+      });
+
+
+    }catch(e){
+      success = 'Erreur : '+e.toString();
+      print('Erreur :'+e.toString());
+    }
+
+    return success;
+
   }
 
   //Fermer la connexion à la base de données

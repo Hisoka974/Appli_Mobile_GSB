@@ -13,10 +13,6 @@ class _Connexion extends State<Connexion> {
 
  static BaseDeDonnees bdd = BaseDeDonnees.OuvrirConnexion;
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
 
@@ -28,7 +24,7 @@ class _Connexion extends State<Connexion> {
       return showDialog(context: context, builder:
           (context) => AlertDialog(
         title: Text('Etes vous sur ?'),
-        content: Text('Vous allez quitter l''application'),
+        content: Text('Vous allez quitter l\'application'),
         actions: <Widget>[
           FlatButton(
             color: Colors.blue,
@@ -124,11 +120,11 @@ class _Connexion extends State<Connexion> {
               var res = bdd.testConnexion(_tblogin.text, _tbmdp.text);
 
               //On test si les identifiants sont corrects
-              res.then((onValue){
+              res.then((onValue) async {
                 if(onValue==true)
                   {
                     //fonctions.affciherToast("OK", Colors.green);
-                    bdd.remplirCollection();
+                   await bdd.remplirCollection();
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => new Menu()),

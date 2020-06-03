@@ -14,5 +14,11 @@ class  fonctions{
         );
   }
 
+  //Récupérer le numéro du mois actuel
+  static int RecupNumMois(){
+   var date = DateTime.now();
+   return date.month;
+}
+
 
 }

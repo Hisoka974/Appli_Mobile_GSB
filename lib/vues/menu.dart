@@ -1,7 +1,8 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ppe/vues/ModifierCaMensuel.dart';
+import 'package:ppe/vues/ajoutCaMensuel.dart';
 import 'package:ppe/vues/modifierVisiteur.dart';
 import '../Bdd/bdd.dart';
 
@@ -19,8 +20,8 @@ class Menu extends StatefulWidget {
 
 class _Menu extends State {
 
+
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  final SnackBar snackBar = const SnackBar(content: Text('Showing Snackbar'));
   //Instance de la bdd
   static BaseDeDonnees bdd = BaseDeDonnees.OuvrirConnexion;
   List<Visiteur> visiteurs = List();
@@ -28,8 +29,14 @@ class _Menu extends State {
 
 
 
+
 // Liste des actions que peut effectuer l'utilisateur sur un visiteur
-  void _actions(Visiteur unVisiteur, int index) {
+  Future<void> _actions(Visiteur unVisiteur, int index) async {
+    print(unVisiteur.getId);
+    var res = await bdd.getCa();
+    res.forEach((mon){
+      print(mon);
+    });
      showDialog(
         context: context ,
         barrierDismissible: true,
@@ -88,7 +95,16 @@ class _Menu extends State {
                   ],
                 ),
                 onPressed: (){
-                  print('info');
+                  if(unVisiteur.getListCa.length == fonctions.RecupNumMois()-1){
+                    fonctions.affciherToast('Tous les chiffre d\'affaires précédent ce mois ont été renseignés', Colors.orange);
+                  }else{
+                    Navigator.of(context).pop(false);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => new ajouterCaMensuel(monVisiteur: unVisiteur, index: index),
+                        )
+                    );
+                  }
                 },
               ),
 
@@ -103,7 +119,15 @@ class _Menu extends State {
                   ],
                 ),
                 onPressed: (){
-                  print('info');
+                  if(unVisiteur.getListCa.length == 0){
+                    fonctions.affciherToast('Aucun chiffre d\'affaires n\'a été renseigné', Colors.orange);
+                  }else{
+                    Navigator.of(context).pop(false);
+                    Navigator.push(
+                        context,
+                    MaterialPageRoute(builder: (context) => new modifierCaMensuel(monVisiteur: unVisiteur, index: index)),
+                    );
+                  }
                 },
               ),
 
@@ -129,22 +153,18 @@ class _Menu extends State {
 
   //Fonction demande confirmation déconnexion
   Future<bool> _Deconnexion() {
-
     return showDialog(context: context, builder:
         (context) => AlertDialog(
       title: Text('Etes vous sur ?'),
-      content: Text('Vous allez être déconnecté de l''application'),
+      content: Text('Vous allez être déconnecté de l\'application'),
       actions: <Widget>[
         FlatButton(
           color: Colors.blue,
           textColor: Colors.white,
           child: Text('Oui'),
           onPressed: (){
-            collection.collectionVisiteurs.clear();
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => new Connexion()),
-            );
+            Navigator.of(context).pop(false);
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Connexion()));
           },
         ),
         FlatButton(
@@ -157,9 +177,7 @@ class _Menu extends State {
         )
       ],
     )
-
     );
-
   }
 
 
@@ -215,16 +233,18 @@ class _Menu extends State {
   void initState(){
     super.initState();
     setState(() {
+      print(collection.collectionVisiteurs.length);
+
       visiteurs = collection.collectionVisiteurs;
       visiteursFiltre = visiteurs;
+      print(visiteursFiltre);
+
     });
   }
 
 
   @override
   Widget build(BuildContext context) {
-
-    String dropdownValue = 'One';
 
     return WillPopScope(child: Scaffold(
       key: scaffoldKey,
@@ -256,6 +276,15 @@ class _Menu extends State {
             child: Container(
               child: FutureBuilder(
                 builder: (BuildContext context, AsyncSnapshot snapshot){
+                  if(visiteursFiltre.length == 0){
+                    return Container(
+                      margin: EdgeInsets.only(top:50),
+                      child: Text('Aucun visiteur dans la base de données',
+                      style: TextStyle(
+                        fontSize: 20
+                      ),),
+                    );
+                  }
                   return ListView.builder(
                       itemCount: visiteursFiltre.length,
                       itemBuilder: (BuildContext context, int index){
@@ -265,7 +294,7 @@ class _Menu extends State {
                             subtitle: Text('Objectif annuel : '+visiteursFiltre[index].getObjAnnuel.toString()+" €"),
                             leading: CircleAvatar(
                               backgroundColor: Colors.blue,
-                              child: Text(visiteursFiltre[index].getNom[0]),
+                              child: Text(visiteursFiltre[index].getNom[0].toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 30),),
                             ),
                             trailing: Wrap(
                               children: <Widget>[
@@ -283,7 +312,6 @@ class _Menu extends State {
               ),
             ),
           )
-
         ],
 
       ),
