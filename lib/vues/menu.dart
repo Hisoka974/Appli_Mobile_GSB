@@ -27,6 +27,7 @@ class _Menu extends State {
   List<Visiteur> visiteurs = List();
   List<Visiteur> visiteursFiltre = List();
 
+  final _tbRecherche = new TextEditingController();
 
 
 
@@ -203,6 +204,7 @@ class _Menu extends State {
               {
                 fonctions.affciherToast('Suppression', Colors.green);
                 setState(() {
+                  _tbRecherche.clear();
                   visiteurs = collection.collectionVisiteurs;
                   visiteursFiltre = visiteurs;
                 });
@@ -228,6 +230,112 @@ class _Menu extends State {
 
   }
 
+  _onSelect(String value) {
+    switch (value) {
+      case 'obj':
+        return showDialog(context: context, builder:
+            (context) =>
+            AlertDialog(
+              title: Text('Etes vous sur ?'),
+              content: Text('Vous allez remettre les objectifs annuels à 0'),
+              actions: <Widget>[
+                FlatButton(
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  child: Text('Oui'),
+                  onPressed: ()  {
+                    collection.collectionVisiteurs.forEach((monVis){
+                      print(monVis.getObjAnnuel);
+                    });
+                    var res =  bdd.resetObjAnnuel();
+                    collection.collectionVisiteurs.forEach((monVis){
+                      print(monVis.getObjAnnuel);
+                    });
+                    res.then((value){
+                      if(value =='OK')
+                      {
+                        collection.collectionVisiteurs.forEach((monVis){
+                          print(monVis.getObjAnnuel);
+                        });
+                        fonctions.affciherToast('Réinitialisation effectuée', Colors.green);
+                        setState(() {
+                          visiteurs = collection.collectionVisiteurs;
+                          visiteursFiltre = visiteurs;
+                        });
+                        collection.collectionVisiteurs.forEach((monVis){
+                          print(monVis.getObjAnnuel);
+                        });
+                        Navigator.of(context).pop(false);
+                      }else{
+                        fonctions.affciherToast('Une erreur est survenue lors de la réinitialisation', Colors.red);
+                      }
+                    });
+
+                  },
+                ),
+                FlatButton(
+                  color: Colors.red,
+                  textColor: Colors.white,
+                  child: Text('Non'),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                )
+              ],
+            )
+        );
+        break;
+
+
+      case 'ca':
+        return showDialog(context: context, builder:
+            (context) =>
+            AlertDialog(
+              title: Text('Etes vous sur ?'),
+              content: Text('Vous allez effacer les CA mensuels'),
+              actions: <Widget>[
+                FlatButton(
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  child: Text('Oui'),
+                  onPressed: () async {
+                    var res = await bdd.viderCaMensuel();
+                    if(res =='OK')
+                    {
+                      setState(() {
+                        visiteurs = collection.collectionVisiteurs;
+                        visiteursFiltre = visiteurs;
+                      });
+                      fonctions.affciherToast('Réinitialisation effectuée', Colors.green);
+                      Navigator.of(context).pop(false);
+                    }else{
+                      fonctions.affciherToast('Une erreur est survenue lors de la réinitialisation', Colors.red);
+                    }
+
+                  },
+                ),
+                FlatButton(
+                  color: Colors.red,
+                  textColor: Colors.white,
+                  child: Text('Non'),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                )
+              ],
+            )
+        );
+
+        break;
+
+
+      default:
+        return null;
+        break;
+    }
+  }
+
+
 
   @override
   void initState(){
@@ -251,14 +359,27 @@ class _Menu extends State {
       appBar: AppBar(
         title: const Text('GSB Mobile - Visiteurs'),
         actions: <Widget>[
-
-
+          PopupMenuButton(
+            onSelected: _onSelect,
+            icon: Icon(Icons.more_vert,color:Colors.white),
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'obj',
+                child: Text("Réinitialiser les obectifs annuels"),
+              ),
+              PopupMenuItem(
+                value: 'ca',
+                child: Text("Réinitialiser les CA mensuels"),
+              ),
+            ],
+          ),
         ],
       ),
       body:
       Column(
         children: <Widget>[
           TextField(
+            controller: _tbRecherche,
             decoration: InputDecoration(
                 contentPadding: EdgeInsets.all(15.0),
                 hintText: 'Rechercher une personne'

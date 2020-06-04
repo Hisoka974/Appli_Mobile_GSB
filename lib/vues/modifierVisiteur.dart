@@ -156,7 +156,7 @@ class _ModifierVisiteur extends State<ModifierVisiteur> {
       maxLengthEnforced: true,
       keyboardType: TextInputType.number,
       validator: (value){
-        if(value.isEmpty || !isNumeric(value) || !isNumeric(value.replaceAll(' ', '')) || !isNumeric(value.replaceAll('-', ''))){
+        if(value.isEmpty || !isNumeric(value) || !isNumeric(value.replaceAll(' ', '')) || !isNumeric(value.replaceAll('-', '')) || value.length !=10){
           return('Veuillez entrez un numéro de téléphone valide') ;
         }
         return null;

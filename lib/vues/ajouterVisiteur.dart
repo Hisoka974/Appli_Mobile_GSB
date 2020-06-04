@@ -132,7 +132,7 @@ class _AjouterVisiteur extends State<AjouterVisiteur> {
     final tbEmail =TextFormField(
       controller: _tbEmail,
       validator: (value){
-        if(value.isEmpty || !isEmail(value)){
+        if(value.isEmpty || !isEmail(value) || !isEmail(value.replaceAll(" ", ""))){
           return('Veuillez entrez un e-mail') ;
         }
         return null;
@@ -150,7 +150,7 @@ class _AjouterVisiteur extends State<AjouterVisiteur> {
       controller: _tbTel,
       keyboardType: TextInputType.number,
       validator: (value){
-        if(value.isEmpty || !isNumeric(value) || !isNumeric(value.replaceAll(' ', '')) || !isNumeric(value.replaceAll('-', '')) || value.length > 14){
+        if(value.isEmpty || !isNumeric(value) || !isNumeric(value.replaceAll(' ', '')) || !isNumeric(value.replaceAll('-', '')) || value.length !=10){
           return('Veuillez entrez un numéro de téléphone') ;
         }
         return null;
@@ -235,13 +235,6 @@ class _AjouterVisiteur extends State<AjouterVisiteur> {
         child: Text('Ajouter', style: TextStyle(color: Colors.white)),
       ),
     );
-
-
-
-
-
-
-
 
     return
         Form(

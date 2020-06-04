@@ -121,6 +121,7 @@ class BaseDeDonnees {
     
     bool success = true;
     final bdd = await database;
+    var ReelIndex;
     
     //Supprimer dans la base de données et dans la collection
     try{
@@ -137,8 +138,24 @@ class BaseDeDonnees {
        whereArgs: [id],
      );
 
+     for(var i = 0;i <= collection.collectionVisiteurs.length -1; i++){
+       if(collection.collectionVisiteurs[i].getId == id){
+         ReelIndex = i;
+       }
+     }
 
-     collection.collectionVisiteurs.removeAt(index);
+     collection.collectionVisiteurs.removeAt(ReelIndex);
+
+
+   /*  collection.collectionVisiteurs.forEach((monVisiteur){
+       if(monVisiteur.getId == id){
+         collection.collectionVisiteurs.remove(monVisiteur);
+       }
+     });*/
+
+  // collection.collectionVisiteurs.removeWhere((monVisiteur){
+  //   monVisiteur.getId == id;
+  // });
     }catch(e){
       success = false;
       print(e);
@@ -376,6 +393,67 @@ try{
     return success;
 
   }
+
+
+  Future resetObjAnnuel() async{
+
+    final bdd = await database;
+    var success = 'OK';
+
+
+    try{
+      collection.collectionVisiteurs.forEach((monVisiteur) async {
+        await bdd.rawUpdate('''
+        UPDATE visiteurMedical 
+        SET ObjAnnuel = 0   
+        WHERE id = ?
+        ''',
+            [monVisiteur.getId]
+        );
+
+      });
+      collection.collectionVisiteurs.forEach((monVisiteur)  {
+        monVisiteur.setObjAnnuel(0);
+      });
+
+    }catch(e){
+      success = 'Erreur : '+e.toString();
+      print('Erreur :'+e.toString());
+    }
+
+    return success;
+
+  }
+
+
+  Future viderCaMensuel() async{
+
+    final bdd = await database;
+    var success = 'OK';
+
+    try{
+      collection.collectionVisiteurs.forEach((monVisiteur)  {
+
+        if( monVisiteur.getListCa!=null && monVisiteur.getListCa.length >= 1 ){
+          monVisiteur.clearCaMensuel();
+        }
+
+        bdd.execute('DELETE FROM realiserCA');
+
+      });
+
+    }catch(e){
+      success = 'Erreur : '+e.toString();
+      print('Erreur :'+e.toString());
+    }
+
+    return success;
+
+  }
+
+
+
+
 
   //Fermer la connexion à la base de données
   Future fermerConnexion() async{

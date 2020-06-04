@@ -69,6 +69,11 @@ List<caMensuel> get getListCa => _listCaMensuel;
   }
 
 
+  clearCaMensuel(){
+   this._listCaMensuel.clear();
+  }
+
+
 //Méthodes set
 
   void setNom(String nom){

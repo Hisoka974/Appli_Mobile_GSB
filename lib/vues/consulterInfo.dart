@@ -51,7 +51,79 @@ class _infoVisiteur extends State<infoVisiteur> {
 
 
 
-  // receive data from the FirstScreen as a parameter
+  //On test si la liste des CA renvoi des données
+
+  _affciheCa(){
+    if(listeMois.length <1){
+      return Container(
+        child:
+        Row(
+          children: <Widget>[
+            Container(
+              child:  Text(
+                "Aucun chiffre d'affaire trouvé",
+                style: TextStyle(
+                    fontSize: 20
+                ),
+              ),
+              margin: EdgeInsets.only(left: 30),
+            ),
+
+          ],
+        ),
+      );
+    }else{
+      return Container(
+          child:
+          Row(
+            children: <Widget>[
+              Container(
+                child:  Text(
+                  (CaMois == "rien")?listeMois[0].getCaMensuel.toString():CaMois+" € en : ",
+                  style: TextStyle(
+                      fontSize: 20
+                  ),
+                ),
+                margin: EdgeInsets.only(left: 80),
+              ),
+
+
+              Spacer(),
+
+              Container(
+                margin: EdgeInsets.only(top: 15),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: DropdownButton<String>(
+                    value: selectedItem == 'rien' ? listeMois[0].getMois : selectedItem,
+                    onChanged: (String string){
+                      setState(() {
+                        print(CaMois);
+                        selectedItem = string;
+                        CaMois = _recupCA(string).toString();
+                        print(CaMois);
+                      });
+                    },
+                    selectedItemBuilder: (BuildContext context) {
+                      return listeMois.map<Widget>((caMensuel unMois) {
+                        return Text(unMois.getMois);
+                      }).toList();
+                    },
+                    items: listeMois.map((caMensuel unMois) {
+                      return DropdownMenuItem<String>(
+                        child: Text(unMois.getMois),
+                        value: unMois.getMois,
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+        );
+    }
+  }
 
 
   @override
@@ -234,56 +306,7 @@ class _infoVisiteur extends State<infoVisiteur> {
                   )
               ),
 
-
-              Container(
-                  child:
-                  Row(
-                    children: <Widget>[
-                          Container(
-                            child:  Text(
-                              (CaMois == "rien")?listeMois[0].getCaMensuel.toString():CaMois+" € en : ",
-                              style: TextStyle(
-                                fontSize: 20
-                              ),
-                            ),
-                            margin: EdgeInsets.only(left: 80),
-                          ),
-
-
-                          Spacer(),
-
-                          Container(
-                            margin: EdgeInsets.only(top: 15),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                              child: DropdownButton<String>(
-                                value: selectedItem == 'rien' ? listeMois[0].getMois : selectedItem,
-                                onChanged: (String string){
-                                  setState(() {
-                                    print(CaMois);
-                                    selectedItem = string;
-                                    CaMois = _recupCA(string).toString();
-                                    print(CaMois);
-                                  });
-                                },
-                                selectedItemBuilder: (BuildContext context) {
-                                  return listeMois.map<Widget>((caMensuel unMois) {
-                                    return Text(unMois.getMois);
-                                  }).toList();
-                                },
-                                items: listeMois.map((caMensuel unMois) {
-                                  return DropdownMenuItem<String>(
-                                    child: Text(unMois.getMois),
-                                    value: unMois.getMois,
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                  )
+                _affciheCa()
                 ]
               ),
 
